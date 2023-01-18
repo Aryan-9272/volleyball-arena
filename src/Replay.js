@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import PlayerX from "./PlayerX";
-import PlayerCard from "./PlayerCards";
 import PlayerY from "./PlayerY";
 import Ball from "./Ball";
 import Corner from "./Corner";
@@ -62,22 +61,7 @@ const Replay = (props) => {
   }, []);
   return (
     <>
-      <div className="game-top">{"REPLAY"}</div>
-      <div className="main-div">
-        <div className="card-div">
-          <PlayerCard
-            playerDetails={playerArray.find((elem) => {
-              return elem.orientation == 0;
-            })}
-          />
-          <PlayerCard
-            playerDetails={playerArray.find((elem) => {
-              return elem.orientation == 1;
-            })}
-          />
-        </div>
         <div className="board">
-          {/* {(toRender=='pause')?<div className="pause-screen"><h1>MISS BY PLAYER 1 ! ! !</h1></div>:<></>} */}
           <Corner />
           <PlayerX styleProp={pStyle1} />
           <PlayerY styleProp={pStyle2} />
@@ -85,20 +69,6 @@ const Replay = (props) => {
           <PlayerY styleProp={pStyle4} />
           <Ball pos={pos} />
         </div>
-        <div className="card-div">
-          <PlayerCard
-            playerDetails={playerArray.find((elem) => {
-              return elem.orientation == 3;
-            })}
-          />
-          <PlayerCard
-            playerDetails={playerArray.find((elem) => {
-              return elem.orientation == 2;
-            })}
-          />
-        </div>
-      </div>
-      <div className="game-bottom"></div>
     </>
   );
 };

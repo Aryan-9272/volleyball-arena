@@ -38,7 +38,7 @@ const PlayerCard = (props) => {
         </div>
         <div className="card-rows">
           <h1>SCORE</h1>
-          <h1>45</h1>
+          <h1>{props.score}</h1>
         </div>
       </div>
     </>

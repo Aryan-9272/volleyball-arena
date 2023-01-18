@@ -9,9 +9,8 @@ import Out from "./Out.js";
 import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import Scoreboard from "./Scoreboard.js";
 import { Context } from "./App";
-import { render } from "@testing-library/react";
 
-let renderState = "serve";
+let gameState = "serve";
 
 const playerColors = {
   red: { color: "rgb(255, 0, 0)", borColor: "rgb(123, 0, 0)" },
@@ -32,7 +31,7 @@ let keys = {
 };
 
 const pSpeed = 3;
-const ballSpeed = 3;
+const ballSpeed = 2.6;
 
 const center = {
   x: 315,
@@ -50,7 +49,6 @@ const criticalCornervalues = {
   offSet: 10,
 };
 
-let interval;
 let currBallstate,
   currPlayerstate = [];
 let ballReplay = [];
@@ -86,13 +84,13 @@ const setBallangle = (playerId, pos1) => {
     else if (keys.q == true) {
       let angle =
         Math.PI / 9 + Math.random() * ((7 * Math.PI) / 18 - Math.PI / 9);
-      vel.x = ballSpeed * Math.cos(angle);
-      vel.y = -ballSpeed * Math.sin(angle);
+      vel.x = ballSpeed * Math.sin(angle);
+      vel.y = -ballSpeed * Math.cos(angle);
     } else {
       let angle =
         Math.PI / 9 + Math.random() * ((7 * Math.PI) / 18 - Math.PI / 9);
-      vel.x = ballSpeed * Math.cos(angle);
-      vel.y = ballSpeed * Math.sin(angle);
+      vel.x = ballSpeed * Math.sin(angle);
+      vel.y = ballSpeed * Math.cos(angle);
     }
   } else if (playerId == 3) {
     if (keys.j == true && keys.l == true) vel.y = -vel.y;
@@ -114,13 +112,13 @@ const setBallangle = (playerId, pos1) => {
     else if (keys.up == true) {
       let angle =
         Math.PI / 9 + Math.random() * ((7 * Math.PI) / 18 - Math.PI / 9);
-      vel.x = -ballSpeed * Math.cos(angle);
-      vel.y = -ballSpeed * Math.sin(angle);
+      vel.x = -ballSpeed * Math.sin(angle);
+      vel.y = -ballSpeed * Math.cos(angle);
     } else {
       let angle =
         Math.PI / 9 + Math.random() * ((7 * Math.PI) / 18 - Math.PI / 9);
-      vel.x = -ballSpeed * Math.cos(angle);
-      vel.y = ballSpeed * Math.sin(angle);
+      vel.x = -ballSpeed * Math.sin(angle);
+      vel.y = ballSpeed * Math.cos(angle);
     }
   }
 };
@@ -482,6 +480,12 @@ const setScoreChange = (pos) => {
   console.log(missBy, lastTouch);
 };
 
+const setScore = () => {
+  playerScore.forEach((elem, index) => {
+    playerScore[index] += scoreChange[index];
+  });
+};
+
 const Game = () => {
   const playerArray = useContext(Context);
 
@@ -524,105 +528,212 @@ const Game = () => {
   const [pos, setPos] = useState(center);
   const [toRender, setTorender] = useState("game");
 
-  const serve = (playerId) => {
+  currBallstate = pos;
+  currPlayerstate = [pStyle1, pStyle2, pStyle3, pStyle4];
+
+  const setDef = () => {
+    setPos({ x: 50, y: 315 });
+    setPstyle1(player1);
+    setPstyle2(player2);
+    setPstyle3(player3);
+    setPstyle4(player4);
     ballReplay = [];
     playerReplay = [[], [], [], []];
     cornerAllow = true;
     prev = ["center", "center", "center", "center"];
     bounceAllow = [true, true, true, true];
+    scoreChange = [5, 5, 5, 5];
+  };
 
+  const serve = (playerId) => {
     if (playerId == 1) {
       if (keys.d == true) {
         let angle =
-          Math.PI / 9 + Math.random() * ((7 * Math.PI) / 18 - Math.PI / 9);
+          (7 * Math.PI) / 18 +
+          Math.random() * ((8 * Math.PI) / 18 - (7 * Math.PI) / 18);
         vel.x = -ballSpeed * Math.cos(angle);
         vel.y = ballSpeed * Math.sin(angle);
-        renderState = "game";
+        gameState = "play";
         setTorender("game");
         lastTouch = playerId;
       } else if (keys.g == true) {
         let angle =
-          Math.PI / 9 + Math.random() * ((7 * Math.PI) / 18 - Math.PI / 9);
+          (7 * Math.PI) / 18 +
+          Math.random() * ((8 * Math.PI) / 18 - (7 * Math.PI) / 18);
         vel.x = ballSpeed * Math.cos(angle);
         vel.y = ballSpeed * Math.sin(angle);
-        renderState = "game";
+        gameState = "play";
         setTorender("game");
         lastTouch = playerId;
       }
     } else if (playerId == 2) {
       if (keys.q == true) {
         let angle =
-          Math.PI / 9 + Math.random() * ((7 * Math.PI) / 18 - Math.PI / 9);
-        vel.x = ballSpeed * Math.cos(angle);
-        vel.y = -ballSpeed * Math.sin(angle);
-        renderState = "game";
+          (7 * Math.PI) / 18 +
+          Math.random() * ((8 * Math.PI) / 18 - (7 * Math.PI) / 18);
+        vel.x = ballSpeed * Math.sin(angle);
+        vel.y = -ballSpeed * Math.cos(angle);
+        gameState = "play";
         setTorender("game");
         lastTouch = playerId;
       } else if (keys.a == true) {
         let angle =
-          Math.PI / 9 + Math.random() * ((7 * Math.PI) / 18 - Math.PI / 9);
-        vel.x = ballSpeed * Math.cos(angle);
-        vel.y = ballSpeed * Math.sin(angle);
-        renderState = "game";
+          (7 * Math.PI) / 18 +
+          Math.random() * ((8 * Math.PI) / 18 - (7 * Math.PI) / 18);
+        vel.x = ballSpeed * Math.sin(angle);
+        vel.y = ballSpeed * Math.cos(angle);
+        gameState = "play";
         setTorender("game");
         lastTouch = playerId;
       }
     } else if (playerId == 3) {
       if (keys.j == true) {
         let angle =
-          Math.PI / 9 + Math.random() * ((7 * Math.PI) / 18 - Math.PI / 9);
+          (7 * Math.PI) / 18 +
+          Math.random() * ((8 * Math.PI) / 18 - (7 * Math.PI) / 18);
         vel.x = -ballSpeed * Math.cos(angle);
         vel.y = -ballSpeed * Math.sin(angle);
-        renderState = "game";
+        gameState = "play";
         setTorender("game");
         lastTouch = playerId;
       } else if (keys.l == true) {
         let angle =
-          Math.PI / 9 + Math.random() * ((7 * Math.PI) / 18 - Math.PI / 9);
+          (7 * Math.PI) / 18 +
+          Math.random() * ((8 * Math.PI) / 18 - (7 * Math.PI) / 18);
         vel.x = ballSpeed * Math.cos(angle);
         vel.y = -ballSpeed * Math.sin(angle);
-        renderState = "game";
+        gameState = "play";
         setTorender("game");
         lastTouch = playerId;
       }
     } else if (playerId == 4) {
       if (keys.up == true) {
         let angle =
-          Math.PI / 9 + Math.random() * ((7 * Math.PI) / 18 - Math.PI / 9);
-        vel.x = -ballSpeed * Math.cos(angle);
-        vel.y = -ballSpeed * Math.sin(angle);
-        renderState = "game";
+          (7 * Math.PI) / 18 +
+          Math.random() * ((8 * Math.PI) / 18 - (7 * Math.PI) / 18);
+        vel.x = -ballSpeed * Math.sin(angle);
+        vel.y = -ballSpeed * Math.cos(angle);
+        gameState = "play";
         setTorender("game");
         lastTouch = playerId;
       } else if (keys.down == true) {
         let angle =
-          Math.PI / 9 + Math.random() * ((7 * Math.PI) / 18 - Math.PI / 9);
-        vel.x = -ballSpeed * Math.cos(angle);
-        vel.y = ballSpeed * Math.sin(angle);
-        renderState = "game";
+          (7 * Math.PI) / 18 +
+          Math.random() * ((8 * Math.PI) / 18 - (7 * Math.PI) / 18);
+        vel.x = -ballSpeed * Math.sin(angle);
+        vel.y = ballSpeed * Math.cos(angle);
+        gameState = "play";
         setTorender("game");
         lastTouch = playerId;
       }
     }
   };
 
+  const play = () => {
+    bounce(currBallstate, currPlayerstate);
+    cornerBounce(currBallstate);
+    ballReplay.push(currBallstate);
+    if (ballReplay.length > 500) ballReplay.shift();
+    for (let index = 0; index < 4; index++) {
+      playerReplay[index].push(currPlayerstate[index]);
+      if (playerReplay[index].length > 500) playerReplay[index].shift();
+    }
+    setPos((prev) => {
+      return {
+        x: prev.x + vel.x,
+        y: prev.y + vel.y,
+      };
+    });
+    if (keys.d == true) {
+      setPstyle1((prev) => {
+        let temp = { ...prev };
+        if (temp.pos1 > 40) temp.pos1 -= pSpeed;
+        temp.pos2 = temp.pos1 + 130;
+        return temp;
+      });
+    }
+
+    if (keys.g == true) {
+      setPstyle1((prev) => {
+        let temp = { ...prev };
+        if (temp.pos1 < 460) temp.pos1 += pSpeed;
+        temp.pos2 = temp.pos1 + 130;
+        return temp;
+      });
+    }
+
+    if (keys.q == true) {
+      setPstyle2((prev) => {
+        let temp = { ...prev };
+        if (temp.pos1 > 40) temp.pos1 -= pSpeed;
+        temp.pos2 = temp.pos1 + 130;
+        return temp;
+      });
+    }
+
+    if (keys.a == true) {
+      setPstyle2((prev) => {
+        let temp = { ...prev };
+        if (temp.pos1 < 460) temp.pos1 += pSpeed;
+        temp.pos2 = temp.pos1 + 130;
+        return temp;
+      });
+    }
+
+    if (keys.j == true) {
+      setPstyle3((prev) => {
+        let temp = { ...prev };
+        if (temp.pos1 > 40) temp.pos1 -= pSpeed;
+        temp.pos2 = temp.pos1 + 130;
+        return temp;
+      });
+    }
+
+    if (keys.l == true) {
+      setPstyle3((prev) => {
+        let temp = { ...prev };
+        if (temp.pos1 < 460) temp.pos1 += pSpeed;
+        temp.pos2 = temp.pos1 + 130;
+
+        return temp;
+      });
+    }
+
+    if (keys.up == true) {
+      setPstyle4((prev) => {
+        let temp = { ...prev };
+        if (temp.pos1 > 40) temp.pos1 -= pSpeed;
+        temp.pos2 = temp.pos1 + 130;
+
+        return temp;
+      });
+    }
+
+    if (keys.down == true) {
+      setPstyle4((prev) => {
+        let temp = { ...prev };
+        if (temp.pos1 < 460) temp.pos1 += pSpeed;
+        temp.pos2 = temp.pos1 + 130;
+
+        return temp;
+      });
+    }
+  };
+
   const outOfbounds = (pos) => {
     if (pos.x > 620 || pos.y > 620 || pos.x < 10 || pos.y < 10) {
-      renderState = "halt";
+      gameState = "halt";
       setScoreChange(pos);
       setTimeout(() => {
         setTorender("out");
       }, 1000);
       setTimeout(() => {
-        renderState = "out";
+        gameState = "out-of-bounds";
       }, 2500);
     }
   };
 
-  currBallstate = pos;
-  currPlayerstate = [pStyle1, pStyle2, pStyle3, pStyle4];
-
-  if (renderState == "game") {
+  if (gameState == "play") {
     outOfbounds(currBallstate);
   }
 
@@ -636,97 +747,10 @@ const Game = () => {
   }
 
   useEffect(() => {
-    interval = setInterval(() => {
-      if (renderState == "game") {
-        bounce(currBallstate, currPlayerstate);
-        cornerBounce(currBallstate);
-        ballReplay.push(currBallstate);
-        if (ballReplay.length > 500) ballReplay.shift();
-        for (let index = 0; index < 4; index++) {
-          playerReplay[index].push(currPlayerstate[index]);
-          if (playerReplay[index].length > 500) playerReplay[index].shift();
-        }
-        setPos((prev) => {
-          return {
-            x: prev.x + vel.x,
-            y: prev.y + vel.y,
-          };
-        });
-        if (keys.d == true) {
-          setPstyle1((prev) => {
-            let temp = { ...prev };
-            if (temp.pos1 > 40) temp.pos1 -= pSpeed;
-            temp.pos2 = temp.pos1 + 130;
-            return temp;
-          });
-        }
-
-        if (keys.g == true) {
-          setPstyle1((prev) => {
-            let temp = { ...prev };
-            if (temp.pos1 < 460) temp.pos1 += pSpeed;
-            temp.pos2 = temp.pos1 + 130;
-            return temp;
-          });
-        }
-
-        if (keys.q == true) {
-          setPstyle2((prev) => {
-            let temp = { ...prev };
-            if (temp.pos1 > 40) temp.pos1 -= pSpeed;
-            temp.pos2 = temp.pos1 + 130;
-            return temp;
-          });
-        }
-
-        if (keys.a == true) {
-          setPstyle2((prev) => {
-            let temp = { ...prev };
-            if (temp.pos1 < 460) temp.pos1 += pSpeed;
-            temp.pos2 = temp.pos1 + 130;
-            return temp;
-          });
-        }
-
-        if (keys.j == true) {
-          setPstyle3((prev) => {
-            let temp = { ...prev };
-            if (temp.pos1 > 40) temp.pos1 -= pSpeed;
-            temp.pos2 = temp.pos1 + 130;
-            return temp;
-          });
-        }
-
-        if (keys.l == true) {
-          setPstyle3((prev) => {
-            let temp = { ...prev };
-            if (temp.pos1 < 460) temp.pos1 += pSpeed;
-            temp.pos2 = temp.pos1 + 130;
-
-            return temp;
-          });
-        }
-
-        if (keys.up == true) {
-          setPstyle4((prev) => {
-            let temp = { ...prev };
-            if (temp.pos1 > 40) temp.pos1 -= pSpeed;
-            temp.pos2 = temp.pos1 + 130;
-
-            return temp;
-          });
-        }
-
-        if (keys.down == true) {
-          setPstyle4((prev) => {
-            let temp = { ...prev };
-            if (temp.pos1 < 460) temp.pos1 += pSpeed;
-            temp.pos2 = temp.pos1 + 130;
-
-            return temp;
-          });
-        }
-      } else if (renderState == "serve") {
+    const interval = setInterval(() => {
+      if (gameState == "play") {
+        play();
+      } else if (gameState == "serve") {
         serve(2);
       }
     }, 1);
@@ -748,22 +772,22 @@ const Game = () => {
       if (event.key == "ArrowDown") keys.down = true;
 
       if (event.key == " ") {
-        if (renderState == "out") {
-          renderState = "halt";
+        if (gameState == "out-of-bounds") {
+          gameState = "halt";
           setTorender("replay");
           setTimeout(() => {
-            renderState = "replay";
+            gameState = "replay";
           }, 1000);
-        } else if (renderState == "replay") {
-          renderState = "halt";
+        } else if (gameState == "replay") {
+          gameState = "halt";
+          setScore();
           setTorender("scoreboard");
           setTimeout(() => {
-            renderState = "scoreboard";
+            gameState = "scoreboard";
           }, 2000);
-        } else if (renderState == "scoreboard") {
-          setPos({x:50,y:315});
-          setPstyle2(player2);
-          renderState = "serve";
+        } else if (gameState == "scoreboard") {
+          gameState = "serve";
+          setDef();
           setTorender("serve");
         }
       }
@@ -791,52 +815,62 @@ const Game = () => {
     };
   }, []);
 
-  return toRender == "replay" ? (
-    <Replay pos={ballReplay} player={playerReplay} />
-  ) : (
+  return (
     <>
-      <div className="game-top">{"3:00"}</div>
+      <div className="game-top">{toRender == "replay" ? "REPLAY" : "3:00"}</div>
       <div className="main-div">
         <div className="card-div">
           <PlayerCard
+            score={playerScore[0]}
             playerDetails={playerArray.find((elem) => {
               return elem.orientation == 0;
             })}
           />
           <PlayerCard
+            score={playerScore[1]}
             playerDetails={playerArray.find((elem) => {
               return elem.orientation == 1;
             })}
           />
         </div>
-        <div className="board">
-          {toRender == "out" ? (
-            <Out
-              miss={playerArray.find((elem) => {
-                return elem.orientation == missBy - 1;
-              })}
-              last={playerArray.find((elem) => {
-                return elem.orientation == lastTouch - 1;
-              })}
-            />
-          ) : (
-            <></>
-          )}
-          {toRender == "scoreboard" ? <Scoreboard /> : <></>}
-          <Corner />
-          <PlayerX styleProp={pStyle1} />
-          <PlayerY styleProp={pStyle2} />
-          <PlayerX styleProp={pStyle3} />
-          <PlayerY styleProp={pStyle4} />
-          <Ball pos={pos} />
-        </div>
+        {toRender == "replay" ? (
+          <Replay pos={ballReplay} player={playerReplay} />
+        ) : (
+          <div className="board">
+            {toRender == "out" ? (
+              <Out
+                miss={playerArray.find((elem) => {
+                  return elem.orientation == missBy - 1;
+                })}
+                last={playerArray.find((elem) => {
+                  return elem.orientation == lastTouch - 1;
+                })}
+              />
+            ) : (
+              <></>
+            )}
+            {toRender == "scoreboard" ? (
+              <Scoreboard score={playerScore} scoreChange={scoreChange} />
+            ) : (
+              <></>
+            )}
+            <Corner />
+            <PlayerX styleProp={pStyle1} />
+            <PlayerY styleProp={pStyle2} />
+            <PlayerX styleProp={pStyle3} />
+            <PlayerY styleProp={pStyle4} />
+            <Ball pos={pos} />
+          </div>
+        )}
         <div className="card-div">
           <PlayerCard
+            score={playerScore[3]}
             playerDetails={playerArray.find((elem) => {
               return elem.orientation == 3;
             })}
           />
           <PlayerCard
+            score={playerScore[2]}
             playerDetails={playerArray.find((elem) => {
               return elem.orientation == 2;
             })}
