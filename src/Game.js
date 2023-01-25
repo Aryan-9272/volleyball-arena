@@ -10,7 +10,7 @@ import AudiotrackIcon from "@mui/icons-material/Audiotrack";
 import Scoreboard from "./Scoreboard.js";
 import { Context } from "./App";
 
-let gameState = "serve";
+var gameState = "serve";
 
 const playerColors = {
   red: { color: "rgb(255, 0, 0)", borColor: "rgb(123, 0, 0)" },
@@ -19,7 +19,7 @@ const playerColors = {
   yellow: { color: "rgb(230 255 0)", borColor: "rgb(183 177 1)" },
 };
 
-let keys = {
+var keys = {
   d: false,
   g: false,
   q: false,
@@ -30,14 +30,15 @@ let keys = {
   down: false,
 };
 
-const pSpeed = 3;
-const ballSpeed = 2.6;
+const pSpeed = 5;
+const ballSpeed = 5;
 
 const center = {
-  x: 315,
+  x: 50,
   y: 315,
 };
-let vel = {
+
+var vel = {
   x: ballSpeed,
   y: 0,
 };
@@ -49,16 +50,17 @@ const criticalCornervalues = {
   offSet: 10,
 };
 
-let currBallstate,
-  currPlayerstate = [];
-let ballReplay = [];
-let playerReplay = [[], [], [], []];
-let cornerAllow = true;
-let prev = ["center", "center", "center", "center"];
-let bounceAllow = [true, true, true, true];
-let playerScore = [0, 0, 0, 0];
-let scoreChange = [5, 5, 5, 5];
-let lastTouch, missBy;
+var currBallstate,
+  currPlayerstate = new Array(4);
+var ballReplay = [];
+var playerReplay = [[], [], [], []];
+var cornerAllow = true;
+var prev = ["center", "center", "center", "center"];
+var bounceAllow = [true, true, true, true];
+var playerScore = [0, 0, 0, 0];
+var scoreChange = [5, 5, 5, 5];
+var lastTouch, missBy;
+var animID;
 
 const setBallangle = (playerId, pos1) => {
   if (pos1 == 40 || pos1 == 460) {
@@ -477,7 +479,6 @@ const setScoreChange = (pos) => {
   }
   scoreChange[missBy - 1] = -5;
   scoreChange[lastTouch - 1] = 10;
-  console.log(missBy, lastTouch);
 };
 
 const setScore = () => {
@@ -528,15 +529,35 @@ const Game = () => {
   const [pos, setPos] = useState(center);
   const [toRender, setTorender] = useState("game");
 
-  currBallstate = pos;
-  currPlayerstate = [pStyle1, pStyle2, pStyle3, pStyle4];
+
+
+  const storeReplay=()=>{
+    ballReplay.push({...currBallstate});
+
+    if (ballReplay.length > 500) ballReplay.shift();
+
+    for (let index = 0; index < 4; index++) {
+      playerReplay[index].push({...currPlayerstate[index]});
+      if (playerReplay[index].length > 500) playerReplay[index].shift();
+    }
+  }
+
+  const outOfbounds = (pos) => {
+    if (pos.x > 620 || pos.y > 620 || pos.x < 10 || pos.y < 10) {
+      gameState = "halt";
+      setScoreChange(pos);
+      setTimeout(() => {
+        setTorender("out");
+      }, 1000);
+      setTimeout(() => {
+        gameState = "out-of-bounds";
+      }, 2500);
+    }
+  };
 
   const setDef = () => {
-    setPos({ x: 50, y: 315 });
-    setPstyle1(player1);
-    setPstyle2(player2);
-    setPstyle3(player3);
-    setPstyle4(player4);
+    currBallstate={...center};
+    currPlayerstate=[{...player1},{...player2},{...player3},{...player4}];
     ballReplay = [];
     playerReplay = [[], [], [], []];
     cornerAllow = true;
@@ -632,128 +653,87 @@ const Game = () => {
   const play = () => {
     bounce(currBallstate, currPlayerstate);
     cornerBounce(currBallstate);
-    ballReplay.push(currBallstate);
-    if (ballReplay.length > 500) ballReplay.shift();
-    for (let index = 0; index < 4; index++) {
-      playerReplay[index].push(currPlayerstate[index]);
-      if (playerReplay[index].length > 500) playerReplay[index].shift();
-    }
-    setPos((prev) => {
-      return {
-        x: prev.x + vel.x,
-        y: prev.y + vel.y,
-      };
-    });
+    currBallstate.x+=vel.x;
+    currBallstate.y+=vel.y;
     if (keys.d == true) {
-      setPstyle1((prev) => {
-        let temp = { ...prev };
-        if (temp.pos1 > 40) temp.pos1 -= pSpeed;
-        temp.pos2 = temp.pos1 + 130;
-        return temp;
-      });
+      if (currPlayerstate[0].pos1 > 40){
+        currPlayerstate[0].pos1 -= pSpeed;
+        currPlayerstate[0].pos2 = currPlayerstate[0].pos1 + 130;
+      }
     }
 
     if (keys.g == true) {
-      setPstyle1((prev) => {
-        let temp = { ...prev };
-        if (temp.pos1 < 460) temp.pos1 += pSpeed;
-        temp.pos2 = temp.pos1 + 130;
-        return temp;
-      });
+      if (currPlayerstate[0].pos1 < 460){
+        currPlayerstate[0].pos1 += pSpeed;
+        currPlayerstate[0].pos2 = currPlayerstate[0].pos1 + 130;
+      }
     }
 
     if (keys.q == true) {
-      setPstyle2((prev) => {
-        let temp = { ...prev };
-        if (temp.pos1 > 40) temp.pos1 -= pSpeed;
-        temp.pos2 = temp.pos1 + 130;
-        return temp;
-      });
+      if (currPlayerstate[1].pos1 > 40){
+        currPlayerstate[1].pos1 -= pSpeed;
+        currPlayerstate[1].pos2 = currPlayerstate[1].pos1 + 130;
+      }
     }
 
     if (keys.a == true) {
-      setPstyle2((prev) => {
-        let temp = { ...prev };
-        if (temp.pos1 < 460) temp.pos1 += pSpeed;
-        temp.pos2 = temp.pos1 + 130;
-        return temp;
-      });
+      if (currPlayerstate[1].pos1 < 460){
+        currPlayerstate[1].pos1 += pSpeed;
+        currPlayerstate[1].pos2 = currPlayerstate[1].pos1 + 130;
+      }
     }
 
     if (keys.j == true) {
-      setPstyle3((prev) => {
-        let temp = { ...prev };
-        if (temp.pos1 > 40) temp.pos1 -= pSpeed;
-        temp.pos2 = temp.pos1 + 130;
-        return temp;
-      });
+      if (currPlayerstate[2].pos1 > 40){
+        currPlayerstate[2].pos1 -= pSpeed;
+        currPlayerstate[2].pos2 = currPlayerstate[2].pos1 + 130;
+      }
     }
 
     if (keys.l == true) {
-      setPstyle3((prev) => {
-        let temp = { ...prev };
-        if (temp.pos1 < 460) temp.pos1 += pSpeed;
-        temp.pos2 = temp.pos1 + 130;
-
-        return temp;
-      });
+      if (currPlayerstate[2].pos1 < 460){
+        currPlayerstate[2].pos1 += pSpeed;
+        currPlayerstate[2].pos2 = currPlayerstate[2].pos1 + 130;
+      }
     }
 
     if (keys.up == true) {
-      setPstyle4((prev) => {
-        let temp = { ...prev };
-        if (temp.pos1 > 40) temp.pos1 -= pSpeed;
-        temp.pos2 = temp.pos1 + 130;
-
-        return temp;
-      });
+      if (currPlayerstate[3].pos1 > 40){
+        currPlayerstate[3].pos1 -= pSpeed;
+        currPlayerstate[3].pos2 = currPlayerstate[3].pos1 + 130;
+      }
     }
 
     if (keys.down == true) {
-      setPstyle4((prev) => {
-        let temp = { ...prev };
-        if (temp.pos1 < 460) temp.pos1 += pSpeed;
-        temp.pos2 = temp.pos1 + 130;
-
-        return temp;
-      });
+      if (currPlayerstate[3].pos1 < 460){
+        currPlayerstate[3].pos1 += pSpeed;
+        currPlayerstate[3].pos2 = currPlayerstate[3].pos1 + 130;
+      }
     }
-  };
-
-  const outOfbounds = (pos) => {
-    if (pos.x > 620 || pos.y > 620 || pos.x < 10 || pos.y < 10) {
-      gameState = "halt";
-      setScoreChange(pos);
-      setTimeout(() => {
-        setTorender("out");
-      }, 1000);
-      setTimeout(() => {
-        gameState = "out-of-bounds";
-      }, 2500);
-    }
-  };
-
-  if (gameState == "play") {
+    storeReplay();
     outOfbounds(currBallstate);
+  };
+
+  const animate=()=>{
+    setPos({...currBallstate});
+    setPstyle1({...currPlayerstate[0]});
+    setPstyle2({...currPlayerstate[1]});
+    setPstyle3({...currPlayerstate[2]});
+    setPstyle4({...currPlayerstate[3]});
+    animID=requestAnimationFrame(animate);
   }
 
-  if (toRender == "out") {
-    ballReplay.push(currBallstate);
-    if (ballReplay.length > 500) ballReplay.shift();
-    for (let index = 0; index < 4; index++) {
-      playerReplay[index].push(currPlayerstate[index]);
-      if (playerReplay[index].length > 500) playerReplay[index].shift();
-    }
-  }
 
   useEffect(() => {
+    setDef();
     const interval = setInterval(() => {
       if (gameState == "play") {
         play();
       } else if (gameState == "serve") {
         serve(2);
       }
-    }, 1);
+    }, 10);
+    animID=requestAnimationFrame(animate);
     window.addEventListener("keydown", (event) => {
       if (event.key == "d") keys.d = true;
 
@@ -811,6 +791,7 @@ const Game = () => {
     });
 
     return () => {
+      cancelAnimationFrame(animID);
       clearInterval(interval);
     };
   }, []);
