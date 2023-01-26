@@ -7,7 +7,7 @@ import Corner from "./Corner";
 var currBallstate,
   currPlayerstate = new Array(4);
 var ind = 0;
-var interval, animId;
+var interval;
 
 const Replay = (props) => {
   const [pStyle1, setPstyle1] = useState(props.player[0][0]);
@@ -22,7 +22,6 @@ const Replay = (props) => {
     setPstyle2(currPlayerstate[1]);
     setPstyle3(currPlayerstate[2]);
     setPstyle4(currPlayerstate[3]);
-    animId = requestAnimationFrame(animate);
   };
 
   if (ind == props.pos.length) {
@@ -43,13 +42,13 @@ const Replay = (props) => {
         currPlayerstate[2] = props.player[2][ind];
         currPlayerstate[3] = props.player[3][ind];
         ind++;
+        animate();
       }
-    }, 25);
-    requestAnimationFrame(animate);
+    }, 10);
+   
     return () => {
       ind = 0;
       clearInterval(interval);
-      cancelAnimationFrame(animId);
     };
   }, []);
   return (

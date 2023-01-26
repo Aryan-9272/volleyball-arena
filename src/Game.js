@@ -30,8 +30,8 @@ var keys = {
   down: false,
 };
 
-const pSpeed = 5;
-const ballSpeed = 5;
+const pSpeed = 3;
+const ballSpeed = 2.6;
 
 const center = {
   x: 50,
@@ -60,7 +60,6 @@ var bounceAllow = [true, true, true, true];
 var playerScore = [0, 0, 0, 0];
 var scoreChange = [5, 5, 5, 5];
 var lastTouch, missBy;
-var animID;
 
 const setBallangle = (playerId, pos1) => {
   if (pos1 == 40 || pos1 == 460) {
@@ -720,7 +719,7 @@ const Game = () => {
     setPstyle2({...currPlayerstate[1]});
     setPstyle3({...currPlayerstate[2]});
     setPstyle4({...currPlayerstate[3]});
-    animID=requestAnimationFrame(animate);
+    
   }
 
 
@@ -729,11 +728,13 @@ const Game = () => {
     const interval = setInterval(() => {
       if (gameState == "play") {
         play();
+        animate();
       } else if (gameState == "serve") {
         serve(2);
+        animate();
       }
-    }, 10);
-    animID=requestAnimationFrame(animate);
+    }, 1);
+   
     window.addEventListener("keydown", (event) => {
       if (event.key == "d") keys.d = true;
 
@@ -791,7 +792,6 @@ const Game = () => {
     });
 
     return () => {
-      cancelAnimationFrame(animID);
       clearInterval(interval);
     };
   }, []);
